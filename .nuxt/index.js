@@ -13,12 +13,12 @@ import { createStore } from './store.js'
 
 /* Plugins */
 
-import nuxt_plugin_axios_6bdd0d42 from 'nuxt_plugin_axios_6bdd0d42' // Source: .\\axios.js (mode: 'all')
-import nuxt_plugin_vuetify_d6afc2c2 from 'nuxt_plugin_vuetify_d6afc2c2' // Source: ..\\plugins\\vuetify.js (mode: 'all')
-import nuxt_plugin_base_5a09ad60 from 'nuxt_plugin_base_5a09ad60' // Source: ..\\plugins\\base.js (mode: 'all')
-import nuxt_plugin_chartist_94bdd556 from 'nuxt_plugin_chartist_94bdd556' // Source: ..\\plugins\\chartist.js (mode: 'all')
-import nuxt_plugin_components_50cb0b6b from 'nuxt_plugin_components_50cb0b6b' // Source: ..\\plugins\\components.js (mode: 'all')
-import nuxt_plugin_ckeditor_01e62ccc from 'nuxt_plugin_ckeditor_01e62ccc' // Source: ..\\plugins\\ckeditor.js (mode: 'client')
+import nuxt_plugin_axios_19652b69 from 'nuxt_plugin_axios_19652b69' // Source: ./axios.js (mode: 'all')
+import nuxt_plugin_vuetify_d6afc2c2 from 'nuxt_plugin_vuetify_d6afc2c2' // Source: ../plugins/vuetify.js (mode: 'all')
+import nuxt_plugin_base_5a09ad60 from 'nuxt_plugin_base_5a09ad60' // Source: ../plugins/base.js (mode: 'all')
+import nuxt_plugin_chartist_94bdd556 from 'nuxt_plugin_chartist_94bdd556' // Source: ../plugins/chartist.js (mode: 'all')
+import nuxt_plugin_components_50cb0b6b from 'nuxt_plugin_components_50cb0b6b' // Source: ../plugins/components.js (mode: 'all')
+import nuxt_plugin_ckeditor_01e62ccc from 'nuxt_plugin_ckeditor_01e62ccc' // Source: ../plugins/ckeditor.js (mode: 'client')
 
 // Component: <ClientOnly>
 Vue.component(ClientOnly.name, ClientOnly)
@@ -215,8 +215,8 @@ async function createApp(ssrContext, config = {}) {
   }
   // Plugin execution
 
-  if (typeof nuxt_plugin_axios_6bdd0d42 === 'function') {
-    await nuxt_plugin_axios_6bdd0d42(app.context, inject)
+  if (typeof nuxt_plugin_axios_19652b69 === 'function') {
+    await nuxt_plugin_axios_19652b69(app.context, inject)
   }
 
   if (typeof nuxt_plugin_vuetify_d6afc2c2 === 'function') {
@@ -248,12 +248,14 @@ async function createApp(ssrContext, config = {}) {
 
   // Wait for async component to be resolved first
   await new Promise((resolve, reject) => {
-    const { route } = router.resolve(app.context.route.fullPath)
-    // Ignore 404s rather than blindly replacing URL
-    if (!route.matched.length && process.client) {
-      return resolve()
+    // Ignore 404s rather than blindly replacing URL in browser
+    if (process.client) {
+      const { route } = router.resolve(app.context.route.fullPath)
+      if (!route.matched.length) {
+        return resolve()
+      }
     }
-    router.replace(route, resolve, (err) => {
+    router.replace(app.context.route.fullPath, resolve, (err) => {
       // https://github.com/vuejs/vue-router/blob/v3.4.3/src/util/errors.js
       if (!err._isRouter) return reject(err)
       if (err.type !== 2 /* NavigationFailureType.redirected */) return resolve()
